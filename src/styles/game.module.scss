@@ -1,0 +1,18 @@
+.main{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+.players{
+  display: flex;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+.card{
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #dadada;
+  cursor: pointer;
+}
