@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "classnames": "^2.3.2",
+    "mongoose": "^7.6.3",
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18",
     "reactjs-qr-reader": "^1.1.0",
-    "sass": "^1.69.4",
-    "scss": "^0.2.4"
+    "sass": "^1.69.4"
   }
 }

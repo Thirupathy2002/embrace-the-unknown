@@ -1,9 +1,9 @@
 .main {
-  // display: flex;
-  // flex-direction: column;
-  // align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 6rem;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100vw;
 
   .head {
@@ -20,7 +20,7 @@
   .rules {
     background-color: #ffffffc0;
     color: black;
-    margin-top: 2rem;
+    margin-top: 3rem;
     border-radius: 5px;
     padding: 1rem;
     .title {
@@ -34,21 +34,39 @@
   }
 
   .room {
+    margin-top: 3rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 2rem;
+    .create {
+      display: flex;
+      gap: 1rem;
+      input {
+        min-width: 250px;
+        text-transform: uppercase;
+        border-radius: 5px;
+        border: 1px solid #ffffffc0;
+        padding: 1rem;
+        background-color: #ffffffc0;
+        color: black;
+        &::placeholder {
+          text-transform: initial;
+        }
+        &:focus {
+          outline: none;
+          border: 1px solid #ffffff;
+        }
+      }
+    }
     .button {
       border-radius: 5px;
       background-color: #ffffffc0;
-      color: black;
       border: 1px solid #ffffffc0;
+      color: black;
       padding: 1rem;
-      margin-top: 2rem;
       transition: all 0.5s;
-      &.create {
-      }
       &.join {
       }
       &:hover {
