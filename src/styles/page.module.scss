@@ -14,18 +14,21 @@
 
     .title {
       font-size: 30px;
+      margin-bottom: 2rem;
+      font-weight: 800;
     }
   }
 
   .rules {
-    background-color: #ffffffc0;
+    background-color: #fff;
     color: black;
-    margin-top: 3rem;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 1rem;
+
     .title {
       font-size: 20px;
     }
+
     ul {
       li {
         margin-left: 1rem;
@@ -40,40 +43,24 @@
     align-items: center;
     justify-content: center;
     gap: 2rem;
+
     .create {
       display: flex;
       gap: 1rem;
+
       input {
         min-width: 250px;
         text-transform: uppercase;
-        border-radius: 5px;
-        border: 1px solid #ffffffc0;
-        padding: 1rem;
-        background-color: #ffffffc0;
+        border-radius: 10px;
+        border: 1px solid #fff;
+        padding: 0.8rem 1rem;
+        background-color: #fff;
         color: black;
-        &::placeholder {
-          text-transform: initial;
-        }
+
         &:focus {
           outline: none;
           border: 1px solid #ffffff;
         }
-      }
-    }
-    .button {
-      border-radius: 5px;
-      background-color: #ffffffc0;
-      border: 1px solid #ffffffc0;
-      color: black;
-      padding: 1rem;
-      transition: all 0.5s;
-      &.join {
-      }
-      &:hover {
-        background-color: transparent;
-        color: white;
-        scale: 1.05;
-        transition: all 0.5s;
       }
     }
   }
