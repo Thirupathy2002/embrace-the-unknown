@@ -2,12 +2,11 @@
 import styles from "@/styles/page.module.scss";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const [roomID, setRoomID] = useState("");
-  const handleRoom = async (type) => {
+  const handleRoom = async (e, type) => {
+    e.preventDefault();
     if (type === "create") {
       const res = await fetch("/api/create", {
         cache: "no-store",
@@ -20,9 +19,22 @@ export default function Home() {
         router.replace(`/game/${roomID}`);
       }
     } else {
-      router.replace(`/game/${roomID}`);
+      const roomID = e.target.room.value;
+      const res = await fetch("/api/join", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify({
+          roomID,
+        }),
+      });
+      if (res.status !== 200) {
+        console.log("not found");
+      } else {
+        router.replace(`/game/${roomID}`);
+      }
     }
   };
+
   return (
     <div className={styles.main}>
       <div className={styles.head}>
@@ -44,23 +56,16 @@ export default function Home() {
         </ul>
       </div>
       <div className={styles.room}>
-        <div className={styles.create}>
-          <input
-            type="text"
-            maxLength="6"
-            name="room"
-            placeholder="Enter a room code"
-            value={roomID}
-            onChange={(e) => setRoomID(e.target.value)}
-          />
-          <div className={styles.button} onClick={() => handleRoom("join")}>
+        <form className={styles.create} onSubmit={(e) => handleRoom(e, "join")}>
+          <input type="text" maxLength="6" name="room" placeholder="Enter a room code" />
+          <button className={styles.button} type="submit">
             Join a room
-          </div>
-        </div>
+          </button>
+        </form>
         or
         <div
           className={classNames(styles.create, styles.button)}
-          onClick={() => handleRoom("create")}
+          onClick={(e) => handleRoom(e, "create")}
         >
           Create a room
         </div>
