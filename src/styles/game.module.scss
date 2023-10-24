@@ -16,3 +16,12 @@
   border: 1px solid #dadada;
   cursor: pointer;
 }
+.container{
+  height: 100vh;
+  max-width: 900px;
+  margin-inline: auto;
+  > h2{
+    padding: 1rem 0;
+    text-align: center;
+  }
+}

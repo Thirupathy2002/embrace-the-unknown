@@ -6,18 +6,18 @@ import Link from "next/link"
 const page = ({ params }) => {
   const roomId = params.id
 
-  const handlePlayerPage = (path) => {
-    
-  }
+  const handlePlayerPage = (path) => {}
 
   return (
     <div className={styles.main}>
       <h1>Room Id: {roomId}</h1>
       <divn className={styles.players}>
-        <Link href={`${roomId}/player1`}>
-          <div className={styles.card} onClick={handlePlayerPage()}>Player 1</div>
+        <Link replace={true} href={`${roomId}/player1`}>
+          <div className={styles.card} onClick={handlePlayerPage()}>
+            Player 1
+          </div>
         </Link>
-        <Link href={`${roomId}/player2`}>
+        <Link replace={true} href={`${roomId}/player2`}>
           <div className={styles.card}>Player 2</div>
         </Link>
       </divn>
