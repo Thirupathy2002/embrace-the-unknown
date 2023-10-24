@@ -2,6 +2,7 @@
 import styles from "@/styles/page.module.scss";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Home() {
   const router = useRouter();
@@ -28,8 +29,9 @@ export default function Home() {
         }),
       });
       if (res.status !== 200) {
-        console.log("not found");
+        toast.error("Room not found");
       } else {
+        toast.success("Room not found");
         router.replace(`/game/${roomID}`);
       }
     }
@@ -63,12 +65,12 @@ export default function Home() {
           </button>
         </form>
         or
-        <div
+        <button
           className={classNames(styles.create, styles.button)}
           onClick={(e) => handleRoom(e, "create")}
         >
           Create a room
-        </div>
+        </button>
       </div>
     </div>
   );

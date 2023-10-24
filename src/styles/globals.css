@@ -12,10 +12,32 @@ body {
 
 body {
   color: white;
-background: linear-gradient(135.8deg, rgb(0, 0, 0) 27.1%, rgb(54, 15, 5) 77.5%);
+  background: linear-gradient(135.8deg, rgb(0, 0, 0) 27.1%, rgb(54, 15, 5) 77.5%);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a,
+button {
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  background-color: #fff;
+  border: 1px solid #fff;
+  color: black;
+  padding: 0.8rem 1rem;
+  transition: all 0.5s;
+  &:hover {
+    background-color: transparent;
+    color: white;
+    scale: 1.05;
+    transition: all 0.5s;
+  }
+}
+
+*::placeholder {
+  text-transform: initial;
 }

@@ -23,6 +23,7 @@
     "react-dom": "^18",
     "react-select": "^5.7.7",
     "reactjs-qr-reader": "^1.1.0",
-    "sass": "^1.69.4"
+    "sass": "^1.69.4",
+    "sonner": "^1.0.3"
   }
 }
