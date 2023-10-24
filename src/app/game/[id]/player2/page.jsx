@@ -15,16 +15,16 @@ const Player2 = () => {
     setLang(selectLang.value)
   }
 
-  const handleCodeChange = (code) => {
-    setCode(code)
-  }
+  // const handleCodeChange = (code) => {
+  //   setCode(code)
+  // }
 
   useEffect(() => {
     setCode(initialCode[lang])
   }, [lang])
 
   return (
-    <main className={styles.container}>
+    <main className={styles.main}>
       {!playingStatus ? (
         <h2 className={styles.title}>
           Wait Untill Player 1 Completes his challenge
@@ -39,7 +39,7 @@ const Player2 = () => {
             maxHeight="400px"
             extensions={[loadLanguage(lang)]}
             placeholder={`Enter your ${lang} code`}
-            onChange={handleCodeChange}
+            // onChange={handleCodeChange}
           />
           <Select
             classNamePrefix="select"

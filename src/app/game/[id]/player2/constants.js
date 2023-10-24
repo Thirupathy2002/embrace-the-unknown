@@ -39,7 +39,8 @@ export const initialCode = {
 export const selectStyles = {
   control: (baseStyles, { isFocused }) => ({
     ...baseStyles,
-    width: "20%",
+    minWidth: "150px",
+    maxWidth: "fit-content",
     backgroundColor: "#161B22",
     color: "#dadada",
     margin: "5px 0",
