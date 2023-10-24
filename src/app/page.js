@@ -17,11 +17,10 @@ export default function Home() {
         console.log("error");
       } else {
         const { roomID } = await res.json();
-        router.push(`/game/${roomID}`);
+        router.replace(`/game/${roomID}`);
       }
     } else {
-      console.log("join");
-      router.push(`/game/${roomID}`);
+      router.replace(`/game/${roomID}`);
     }
   };
   return (
