@@ -61,14 +61,15 @@
     gap: 3rem;
     margin-top: 1rem;
   }
+
+  .notmobile {
+    padding-top: 2rem;
+  }
 }
 
-.container {
-  height: 100vh;
-  max-width: 900px;
-  margin-inline: auto;
-  > h2 {
-    padding: 1rem 0;
-    text-align: center;
+//mobile
+@media screen and (max-width: 480px) {
+  .main {
+    padding: 1rem;
   }
 }
