@@ -6,17 +6,17 @@ import { redirect } from "next/navigation";
 
 const page = async ({ params }) => {
   const roomID = params.id;
-  const res = await fetch(BASE_URL + "/api/join", {
-    cache: "no-store",
-    method: "POST",
-    body: JSON.stringify({
-      roomID,
-    }),
-  });
+  // const res = await fetch(BASE_URL + "/api/join", {
+  //   cache: "no-store",
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     roomID,
+  //   }),
+  // });
 
-  if (res.status !== 200) {
-    redirect("/");
-  }
+  // if (res.status !== 200) {
+  //   redirect("/");
+  // }
 
   return (
     <div className={styles.main}>
