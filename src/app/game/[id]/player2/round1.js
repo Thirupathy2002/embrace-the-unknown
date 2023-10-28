@@ -6,6 +6,7 @@ export const round1 = [
       javascript: `function reverse_string(string) {\n\n  // Write your code here\n\n    return revStr;\n}`,
       c: `#include <stdio.h>\n\nvoid reverse_string(char *str) {\n\n // write your code here\n\n return revStr\n}\n`,
       python: `def reverse_string(string):\n\n  #write your code here\n\n  return revStr`,
+      java: `class ReverseString {\n\n  public static void main(String[] args) {\n\n    //write your code here\n\n    return revStr;\n  }\n}`,
     },
     test_cases: [
       { input: '"Hello World!"', output: '"!dlroW olleH"' },

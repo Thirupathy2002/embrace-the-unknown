@@ -16,17 +16,31 @@ const Player2 = () => {
   const [lang, setLang] = useState("javascript")
   const [code, setCode] = useState(round1[QstnNum].template[lang])
 
+
+
   const handleTest = (type) => {
     const fn_name = round1[QstnNum].check_fn
-    const testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
-      return `${fn_name}(${item.input})`
-    })
+    let testcaseAddedFns = []
+    if (lang === 'java') {
+      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
+        return `System.out.println(${fn_name}(${item.input}))`
+      })
+    } else {
+      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
+        return `${fn_name}(${item.input})`
+      })
+    }
+
     let req_payload
     if (lang === 'c') {
-      req_payload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")}\n returm 0;\n}`
+      req_payload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n returm 0;\n}`
+    }
+    if (lang === 'java') {
+      req_payload = `${code.substring(0, code.length - 1)}\n\npublic static void main(String[] args) {\n${testcaseAddedFns.join(";\n")};\n  return 0;\n   }\n}`
     } else {
       req_payload = `${code}\n${testcaseAddedFns.join("\n")}`
     }
+
     console.log(req_payload);
   }
 
