@@ -44,7 +44,7 @@ const page = async ({ params }) => {
           ✦ Reveal the location of the next QR Code by solving the coding problem. <br />
         </div>
       </div>
-      <div>Choose your player ↓</div>
+      <div className={styles.choose}>Choose your player ↓</div>
       <div className={styles.players}>
         <Link replace={true} href={`${roomID}/player1`}>
           Player 1

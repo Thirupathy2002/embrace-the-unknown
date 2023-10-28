@@ -31,7 +31,7 @@ export default function Home() {
       if (res.status !== 200) {
         toast.error("Room not found");
       } else {
-        toast.success("Room not found");
+        toast.success("Room found");
         router.replace(`/game/${roomID}`);
       }
     }

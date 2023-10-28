@@ -6,17 +6,30 @@ import { toast } from "sonner";
 
 const player1 = ({ params }) => {
   const roomID = params.id;
-  const delay = 500;
 
-  const previewStyle = {};
-
+  const [loading, setLoading] = useState(true);
   const [result, setResult] = useState("No result");
   const [isMobile, setIsMobile] = useState(false);
+  const [access, setAccess] = useState(false);
+  const [scanned, setScanned] = useState(false);
+  const [isTurn, setIsTurn] = useState(false);
 
-  const handleScan = (result) => {
+  const handleScan = async (result) => {
     if (result) {
-      console.log(result);
+      setScanned(true);
       setResult(result.data);
+      const res = await fetch("/api/scan", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify({
+          roomID,
+          code: result.data,
+        }),
+      });
+      if (res.status === 200) {
+        toast.success("Access Granted");
+        setAccess(true);
+      }
     }
   };
 
@@ -24,7 +37,26 @@ const player1 = ({ params }) => {
     toast.error(error);
   };
 
+  const fetchTurn = async () => {
+    const res = await fetch("/api/turn", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        roomID,
+      }),
+    });
+    if (res.status === 200) {
+      const { turn } = await res.json();
+      if (turn == 1) setIsTurn(true);
+      else setIsTurn(false);
+    } else {
+      toast.error("Room not found");
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
+    setLoading(true);
     // @source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent#mobile_device_detection
     let hasTouchScreen = false;
     if ("maxTouchPoints" in navigator) {
@@ -46,7 +78,12 @@ const player1 = ({ params }) => {
       }
     }
     setIsMobile(hasTouchScreen);
+    fetchTurn();
   }, []);
+
+  if (loading) {
+    return <div className={styles.main}>Loading...</div>;
+  }
 
   if (!isMobile) {
     return (
@@ -55,25 +92,48 @@ const player1 = ({ params }) => {
           <div className={styles.title}>EMBRACE THE UNKNOWN</div>
           Room ID: <span>{roomID}</span>
           <br />
-          Make sure you and your teammate are on the same room.
-          <br />
           <div className={styles.notmobile}>⚠️ Player 1 must be using a mobile device.</div>
         </div>
       </div>
     );
   }
+
+  if (!isTurn) {
+    return (
+      <div className={styles.main}>
+        <div className={styles.head}>
+          <div className={styles.title}>EMBRACE THE UNKNOWN</div>
+          Room ID: <span>{roomID}</span>
+          <br />
+        </div>
+        <div className={styles.question}>Waiting for player 2 to complete</div>
+      </div>
+    );
+  }
+
+  if (access) {
+    return (
+      <div className={styles.main}>
+        <div className={styles.head}>
+          <div className={styles.title}>EMBRACE THE UNKNOWN</div>
+          Room ID: <span>{roomID}</span>
+          <br />
+          <div className={styles.question}>Question ....</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.main}>
       <div className={styles.head}>
         <div className={styles.title}>EMBRACE THE UNKNOWN</div>
         Room ID: <span>{roomID}</span>
         <br />
-        Make sure you and your teammate are on the same room.
-        <br />
         Scan the QR code to reveal a puzzle to solve.
       </div>
       <div style={{ width: "100vw", height: "100vw" }}>
-        <QrReader delay={delay} onError={handleError} onScan={handleScan} />
+        {!scanned && <QrReader delay={2000} onError={handleError} onScan={handleScan} />}
       </div>
       <p>{result}</p>
     </div>

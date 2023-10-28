@@ -12,6 +12,11 @@ const RoomSchema = mongoose.Schema({
     required: true,
     default: 1,
   },
+  turn: {
+    type: Number,
+    required: true,
+    default: 1,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -30,6 +35,18 @@ const RoomSchema = mongoose.Schema({
   },
 });
 
-const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
+const CodeSchema = mongoose.Schema({
+  code: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+});
 
-export { Room };
+const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
+const Access_code = mongoose.models.Access_code || mongoose.model("Access_code", CodeSchema);
+
+export { Room, Access_code };
