@@ -80,6 +80,38 @@
   .notmobile {
     padding-top: 2rem;
   }
+
+  .footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .test_block{
+      display: flex;
+      gap: 1rem;
+      .btn{
+        background-color: #161B22;
+        color: #dadada;
+        outline: none;
+        border-color: transparent;
+
+        border-radius: 3px;
+        padding: 8px 16px;
+        &:hover{
+          border: 0.5px Solid #dadada;
+          transform: none;
+        }
+      }
+    }
+  }
+  .test_cases{
+    width: 100%;
+    margin-top: 2rem;
+    .test_case_row{
+      display: flex;
+      gap: 1rem;
+      margin: 8px 0;
+    }
+  }
 }
 
 //mobile
