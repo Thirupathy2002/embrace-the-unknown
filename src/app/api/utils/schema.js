@@ -46,7 +46,46 @@ const CodeSchema = mongoose.Schema({
   },
 });
 
+const QuestionSchema = mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  question: {
+    type: String,
+    required: true,
+  },
+  template: {
+    javascript: {
+      type: String,
+      required: true,
+    },
+    c: {
+      type: String,
+      required: true,
+    },
+    python: {
+      type: String,
+      required: true,
+    },
+    java: {
+      type: String,
+      required: true,
+    },
+  },
+  test_cases: {
+    type: Array,
+    required: true,
+  },
+  check_fn: {
+    type: String,
+    required: true,
+  },
+});
+
 const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
 const Access_code = mongoose.models.Access_code || mongoose.model("Access_code", CodeSchema);
+const CodingQuestions =
+  mongoose.models.CodingQuestions || mongoose.model("CodingQuestions", QuestionSchema);
 
-export { Room, Access_code };
+export { Room, Access_code, CodingQuestions };
