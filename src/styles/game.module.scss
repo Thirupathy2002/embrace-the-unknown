@@ -8,7 +8,7 @@
   max-width: 80vw;
   margin-inline: auto;
 
-  > * {
+  >* {
     width: 100%;
   }
 
@@ -81,14 +81,16 @@
     padding-top: 2rem;
   }
 
-  .footer{
+  .footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .test_block{
+
+    .test_block {
       display: flex;
       gap: 1rem;
-      .btn{
+
+      .btn {
         background-color: #161B22;
         color: #dadada;
         outline: none;
@@ -96,17 +98,31 @@
 
         border-radius: 3px;
         padding: 8px 16px;
-        &:hover{
+
+        &:hover {
           border: 0.5px Solid #dadada;
           transform: none;
         }
       }
     }
+
   }
-  .test_cases{
+
+  .hidden_cases {
+    border: 1px solid #dadada;
+    border-radius: 3px;
+    padding: 1rem 0;
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .test_cases {
     width: 100%;
     margin-top: 2rem;
-    .test_case_row{
+    display: flex;
+    justify-content: space-between;
+
+    .test_case_row {
       display: flex;
       gap: 1rem;
       margin: 8px 0;

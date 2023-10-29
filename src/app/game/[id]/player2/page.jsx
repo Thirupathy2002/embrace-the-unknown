@@ -7,6 +7,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { round1 } from "./round1";
+import { toast } from "sonner";
 
 // get this value from server.
 const QstnNum = 1;
@@ -17,10 +18,13 @@ const player2 = ({ params }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [runcodeLoading, setRuncodeLoading] = useState(false);
   const [lang, setLang] = useState("javascript");
   const [code, setCode] = useState(round1[QstnNum].template[lang]);
   const [isTurn, setIsTurn] = useState(false);
-  const [testCase, setTestCase] = useState([0, 0]);
+  // const [testCase, setTestCase] = useState([0, 0]);
+  const [testpassed, setTestpassed] = useState(false);
+  const [errorString, setErrorString] = useState("");
 
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
@@ -40,7 +44,13 @@ const player2 = ({ params }) => {
     setLoading(false);
   };
 
+  const handleSubmit = () => {
+    console.log('submit');
+  }
+
   const handleTest = async () => {
+    setRuncodeLoading(true);
+
     const functionName = round1[QstnNum].check_fn;
     let testcaseAddedFns = [];
 
@@ -54,13 +64,17 @@ const player2 = ({ params }) => {
       );
       testcaseAddedFns = testcaseAddedFns.join('console.log("^v^");');
     } else {
-      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => `${functionName}(${item.input})`);
+      testcaseAddedFns = round1[QstnNum].test_cases.map(
+        (item) => `${functionName}(${item.input})`
+      );
     }
 
     let reqPayload;
 
     if (lang === "c") {
-      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n return 0;\n}`;
+      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(
+        ";\n"
+      )};\n return 0;\n}`;
     } else if (lang === "java") {
       reqPayload = `${code
         .trim()
@@ -73,16 +87,38 @@ const player2 = ({ params }) => {
     } else {
       reqPayload = `${code}\n${testcaseAddedFns}`;
     }
-
-    const res = await fetch("/api/verify", {
-      cache: "no-store",
-      method: "POST",
-      body: JSON.stringify({
-        roomID,
-        code: reqPayload,
-        lang,
-      }),
-    });
+    try {
+      const res = await fetch("/api/verify", {
+        cache: "no-store",
+        method: "POST",
+        body: JSON.stringify({
+          roomID,
+          code: reqPayload,
+          lang,
+        }),
+      });
+      if (res.status === 202) {
+        setTestpassed(true);
+        toast.success(
+          "All test cases have been passed. Hit submit to continue."
+        );
+      }
+      if (res.status === 400) {
+        toast.error("Error in your code!");
+      }
+      if (res.status === 401) {
+        const result = await res.json();
+        toast.error(result.message);
+      }
+      if (res.status === 206) {
+        const result = await res.json();
+        toast.error("You haven't passed all the test cases🛸");
+      }
+    } catch (err) {
+      toast.error(err);
+    } finally {
+      setRuncodeLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -126,7 +162,9 @@ const player2 = ({ params }) => {
           <div className={styles.title}>EMBRACE THE UNKNOWN</div>
           Room ID: <span>{roomID}</span>
           <br />
-          <div className={styles.notmobile}>⚠️ Player 2 must be using a desktop.</div>
+          <div className={styles.notmobile}>
+            ⚠️ Player 2 must be using a desktop.
+          </div>
         </div>
       </div>
     );
@@ -146,7 +184,9 @@ const player2 = ({ params }) => {
   return (
     <main className={styles.main}>
       <h2 className={styles.title}>Your Coding Challenge</h2>
-      <p style={{ margin: "1rem 0", textAlign: "center" }}>{round1[QstnNum].question}</p>
+      <p style={{ margin: "1rem 0", textAlign: "center" }}>
+        {round1[QstnNum].question}
+      </p>
       <CodeMirror
         value={code}
         theme={githubDark}
@@ -171,26 +211,36 @@ const player2 = ({ params }) => {
         />
         <div className={styles.test_block}>
           <button className={styles.btn} onClick={() => handleTest()}>
-            Run
+            {runcodeLoading ? "Loading.." : "Run code"}
           </button>
-          <button className={styles.btn} onClick={() => handleTest("submit")}>
-            Submit
-          </button>
+          {testpassed && (
+            <button className={styles.btn} onClick={() => handleSubmit()}>
+              Submit
+            </button>
+          )}
         </div>
       </div>
-      {round1[QstnNum].test_cases.map((test_case, index) => (
+      {round1[QstnNum].test_cases.toSpliced(1, 1).map((test_case, index) => (
         <div className={styles.test_cases} key={index}>
-          <h3>Test Case {index + 1}</h3>
-          <div className={styles.test_case_row}>
-            <h4>Input: </h4>
-            <p>{test_case.input}</p>
-          </div>
-          <div className={styles.test_case_row}>
-            <h4>Output: </h4>
-            <p>{test_case.output}</p>
+          <div>
+            <h3>
+              Test Case {index + 1}
+              {testpassed && <span>{`   ✅`}</span>}
+            </h3>
+            <div className={styles.test_case_row}>
+              <h4>Input: </h4>
+              <p>{test_case.input}</p>
+            </div>
+            <div className={styles.test_case_row}>
+              <h4>Output: </h4>
+              <p>{test_case.output}</p>
+            </div>
           </div>
         </div>
       ))}
+      {!testpassed && (
+        <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫.</h4>
+      )}
     </main>
   );
 };
