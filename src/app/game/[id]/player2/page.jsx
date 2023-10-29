@@ -8,6 +8,8 @@ import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { round1 } from "./round1";
 import { toast } from "sonner";
+import ReactDiffViewer from "react-diff-viewer-continued";
+
 
 // get this value from server.
 const QstnNum = 1;
@@ -25,6 +27,8 @@ const player2 = ({ params }) => {
   // const [testCase, setTestCase] = useState([0, 0]);
   const [testpassed, setTestpassed] = useState(false);
   const [errorString, setErrorString] = useState("");
+  const [diff, setDiff] = useState("");
+  
 
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
@@ -50,6 +54,7 @@ const player2 = ({ params }) => {
 
   const handleTest = async () => {
     setRuncodeLoading(true);
+    setDiff("")
 
     const functionName = round1[QstnNum].check_fn;
     let testcaseAddedFns = [];
@@ -112,6 +117,7 @@ const player2 = ({ params }) => {
       }
       if (res.status === 206) {
         const result = await res.json();
+        setDiff(result.stdOutput[0])
         toast.error("You haven't passed all the test cases🛸");
       }
     } catch (err) {
@@ -225,7 +231,7 @@ const player2 = ({ params }) => {
           <div>
             <h3>
               Test Case {index + 1}
-              {testpassed && <span>{`   ✅`}</span>}
+              <span style={{ marginLeft: "1rem" }}>{testpassed ? `✅` : diff ? `❌` : "" }</span>
             </h3>
             <div className={styles.test_case_row}>
               <h4>Input: </h4>
@@ -233,11 +239,18 @@ const player2 = ({ params }) => {
             </div>
             <div className={styles.test_case_row}>
               <h4>Output: </h4>
-              <p>{test_case.output}</p>
+              {console.log(test_case.output)}
+              <p>{`${test_case.output}`}</p>
             </div>
           </div>
         </div>
       ))}
+      {diff && (
+        <ReactDiffViewer
+          oldValue={round1[QstnNum].test_cases[0].output}
+          newValue={diff}
+        />
+      )}
       {!testpassed && (
         <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫.</h4>
       )}
