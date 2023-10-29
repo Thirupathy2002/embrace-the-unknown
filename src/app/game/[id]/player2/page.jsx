@@ -41,27 +41,28 @@ const player2 = ({ params }) => {
   };
 
   const handleTest = async () => {
-    const fn_name = round1[QstnNum].check_fn;
+    const functionName = round1[QstnNum].check_fn;
     let testcaseAddedFns = [];
+
     if (lang === "java") {
-      testcaseAddedFns = round1[QstnNum].test_cases.map((item, i) => {
-        return `System.out.println(${fn_name}(${item.input}));`;
-      });
+      testcaseAddedFns = round1[QstnNum].test_cases.map(
+        (item) => `System.out.println(${functionName}(${item.input}));`
+      );
     } else if (lang === "javascript") {
-      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
-        return `console.log(${fn_name}(${item.input}));\n`;
-      });
-      testcaseAddedFns = testcaseAddedFns.join(`console.log("^v^");\n`);
+      testcaseAddedFns = round1[QstnNum].test_cases.map(
+        (item) => `console.log(${functionName}(${item.input}));`
+      );
+      testcaseAddedFns = testcaseAddedFns.join('console.log("^v^");');
     } else {
-      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
-        return `${fn_name}(${item.input})`;
-      });
+      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => `${functionName}(${item.input})`);
     }
-    let req_payload;
+
+    let reqPayload;
+
     if (lang === "c") {
-      req_payload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n returm 0;\n}`;
+      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n return 0;\n}`;
     } else if (lang === "java") {
-      req_payload = `${code
+      reqPayload = `${code
         .trim()
         .substring(
           0,
@@ -70,14 +71,15 @@ const player2 = ({ params }) => {
         '\nSystem.out.println("^v^");\n'
       )}\n    }\n}`;
     } else {
-      req_payload = `${code}\n${testcaseAddedFns}`;
+      reqPayload = `${code}\n${testcaseAddedFns}`;
     }
+
     const res = await fetch("/api/verify", {
       cache: "no-store",
       method: "POST",
       body: JSON.stringify({
         roomID,
-        code: req_payload,
+        code: reqPayload,
         lang,
       }),
     });

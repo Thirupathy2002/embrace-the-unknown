@@ -11,17 +11,18 @@ export async function POST(req) {
     const room = await Room.findOne({ id: roomID });
     const question = await Coding_questions.findOne({ id: room.code[room.step - 1] });
     const result = await client.execute(lang, code);
-    const stdOutput = result.run.stdout.split("^v^");
-
+    const stdOutput = result.run.stdout.split("\n^v^\n");
     const output = question.test_cases.map((item, i) => {
       if (item.output == stdOutput[i].trim()) {
         return true;
+      } else {
+        return false;
       }
     });
-    if (output.every(true)) {
-      return NextResponse.json({ result: result }, { status: 200 });
+    if (output.every((item) => item === true)) {
+      return NextResponse.json({ result: output }, { status: 202 });
     } else {
-      return NextResponse.json({ stdOutput }, { status: 201 });
+      return NextResponse.json({ result: output, stdOutput }, { status: 206 });
     }
   } catch (error) {
     return NextResponse.json({ message: error.message }, { status: 500 });
