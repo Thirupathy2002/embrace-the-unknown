@@ -85,7 +85,7 @@ const QuestionSchema = mongoose.Schema({
 
 const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
 const Access_code = mongoose.models.Access_code || mongoose.model("Access_code", CodeSchema);
-const CodingQuestions =
-  mongoose.models.CodingQuestions || mongoose.model("CodingQuestions", QuestionSchema);
+const Coding_questions =
+  mongoose.models.Coding_questions || mongoose.model("Coding_questions", QuestionSchema);
 
-export { Room, Access_code, CodingQuestions };
+export { Room, Access_code, Coding_questions };

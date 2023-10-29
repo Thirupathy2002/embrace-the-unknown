@@ -44,10 +44,14 @@ const player2 = ({ params }) => {
     const fn_name = round1[QstnNum].check_fn;
     let testcaseAddedFns = [];
     if (lang === "java") {
-      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
+      testcaseAddedFns = round1[QstnNum].test_cases.map((item, i) => {
         return `System.out.println(${fn_name}(${item.input}));`;
       });
-      console.log(testcaseAddedFns);
+    } else if (lang === "javascript") {
+      testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
+        return `console.log(${fn_name}(${item.input}));\n`;
+      });
+      testcaseAddedFns = testcaseAddedFns.join(`console.log("^v^");\n`);
     } else {
       testcaseAddedFns = round1[QstnNum].test_cases.map((item) => {
         return `${fn_name}(${item.input})`;
@@ -56,16 +60,17 @@ const player2 = ({ params }) => {
     let req_payload;
     if (lang === "c") {
       req_payload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n returm 0;\n}`;
-    }
-    if (lang === "java") {
-      req_payload = `${code.substring(
-        0,
-        code.length - 1
-      )}\n\npublic static void main(String[] args) {\n${testcaseAddedFns.join(
-        'System.out.println("^v^");\n'
+    } else if (lang === "java") {
+      req_payload = `${code
+        .trim()
+        .substring(
+          0,
+          code.length - 1
+        )}\n\npublic static void main(String[] args) {\n${testcaseAddedFns.join(
+        '\nSystem.out.println("^v^");\n'
       )}\n    }\n}`;
     } else {
-      req_payload = `${code}\n${testcaseAddedFns.join("\n")}`;
+      req_payload = `${code}\n${testcaseAddedFns}`;
     }
     const res = await fetch("/api/verify", {
       cache: "no-store",
