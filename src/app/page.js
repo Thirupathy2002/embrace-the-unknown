@@ -17,7 +17,7 @@ export default function Home() {
         console.log("error");
       } else {
         const { roomID } = await res.json();
-        router.replace(`/game/${roomID}`);
+        router.push(`/game/${roomID}`);
       }
     } else {
       const roomID = e.target.room.value;
@@ -32,7 +32,7 @@ export default function Home() {
         toast.error("Room not found");
       } else {
         toast.success("Room found");
-        router.replace(`/game/${roomID}`);
+        router.push(`/game/${roomID}`);
       }
     }
   };

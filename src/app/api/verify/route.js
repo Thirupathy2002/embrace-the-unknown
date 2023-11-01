@@ -16,13 +16,20 @@ export async function POST(req) {
     if (result?.run.stderr.length) {
       return NextResponse.json({ message: result.run.stderr }, { status: 400 });
     }
-    const stdOutput = result.run.stdout.split("\n^v^\n");
-    if (stdOutput.some((item) => item.trim() === "undefined")) {
-      return NextResponse.json(
-        { message: "Function does not return anything!" },
-        { status: 401 }
-      );
+    let stdOutput;
+    if (lang == "c") {
+      stdOutput = result.run.stdout.split("^v^");
+    } else {
+      stdOutput = result.run.stdout.split("\n^v^\n");
     }
+    if (stdOutput.some((item) => item.trim() === "undefined")) {
+      return NextResponse.json({ message: "Function does not return anything!" }, { status: 401 });
+    }
+
+    // console.log(stdOutput[0]);
+    // console.log(stdOutput[1]);
+    // console.log(question.test_cases[0]);
+    // console.log(question.test_cases[1]);
 
     const output = question.test_cases.map((item, i) => {
       if (item.output == stdOutput[i].trim()) {

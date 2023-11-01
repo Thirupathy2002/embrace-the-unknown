@@ -8,12 +8,15 @@ import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { toast } from "sonner";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer-continued";
+import { useRouter } from "next/navigation";
 
 const player2 = ({ params }) => {
   const roomID = params.id;
+  const router = useRouter();
 
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [location, setLocation] = useState("");
   const [runcodeLoading, setRuncodeLoading] = useState(false);
   const [lang, setLang] = useState("javascript");
   const [code, setCode] = useState();
@@ -55,45 +58,68 @@ const player2 = ({ params }) => {
     setLoading(false);
   };
 
-  const handleSubmit = () => {
-    console.log("submit");
+  const handleSubmit = async () => {
+    const res = await fetch("/api/submit", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        roomID,
+      }),
+    });
+    if (res.status === 202) {
+      const { location } = await res.json();
+      setLocation(location);
+      toast.success("Submitted successfully");
+    }
   };
 
   const handleTest = async () => {
     setRuncodeLoading(true);
     setDiff({ newCode: "", oldCode: "" });
     const functionName = question?.check_fn;
+
     let testcaseAddedFns = [];
-
-    if (lang === "java") {
-      testcaseAddedFns = question?.test_cases.map(
-        (item) => `System.out.println(${functionName}(${item.input}));`
-      );
-    } else if (lang === "javascript") {
-      testcaseAddedFns = question?.test_cases.map(
-        (item) => `console.log(${functionName}(${item.input}));`
-      );
-      testcaseAddedFns = testcaseAddedFns.join('console.log("^v^");');
-    } else {
-      testcaseAddedFns = question?.test_cases.map((item) => `${functionName}(${item.input})`);
-    }
-
     let reqPayload;
+    switch (lang) {
+      case "java": {
+        testcaseAddedFns = question?.test_cases.map(
+          (item) => `System.out.println(${functionName}(${item.input}));`
+        );
+        testcaseAddedFns = testcaseAddedFns.join('\nSystem.out.println("^v^");\n');
+        reqPayload = `${code
+          .trim()
+          .slice(0, -1)}\n\npublic static void main(String[] args) {\n${testcaseAddedFns}\n}}`;
+        break;
+      }
 
-    if (lang === "c") {
-      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n return 0;\n}`;
-    } else if (lang === "java") {
-      reqPayload = `${code
-        .trim()
-        .substring(
-          0,
-          code.length - 1
-        )}\n\npublic static void main(String[] args) {\n${testcaseAddedFns.join(
-        '\nSystem.out.println("^v^");\n'
-      )}\n    }\n}`;
-    } else {
-      reqPayload = `${code}\n${testcaseAddedFns}`;
+      case "javascript": {
+        testcaseAddedFns = question?.test_cases.map(
+          (item) => `console.log(${functionName}(${item.input}));\n`
+        );
+        testcaseAddedFns = testcaseAddedFns.join('console.log("^v^");\n');
+        reqPayload = `${code}\n${testcaseAddedFns}`;
+        break;
+      }
+
+      case "python": {
+        testcaseAddedFns = question?.test_cases.map(
+          (item) => `print(${functionName}(${item.input}))\n`
+        );
+        testcaseAddedFns = testcaseAddedFns.join('print("^v^")\n');
+        reqPayload = `${code}\n${testcaseAddedFns}`;
+        break;
+      }
+
+      case "c": {
+        testcaseAddedFns = question?.test_cases.map(
+          (item) => `printf(${functionName}(${item.input}));\n`
+        );
+        testcaseAddedFns = testcaseAddedFns.join('printf("^v^");\n');
+        reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns} return 0;\n}`;
+        break;
+      }
     }
+
     try {
       const res = await fetch("/api/verify", {
         cache: "no-store",
@@ -162,6 +188,15 @@ const player2 = ({ params }) => {
     if (question) setCode(question?.template[lang]);
   }, [lang]);
 
+  if (location) {
+    return (
+      <div className="main">
+        The next QR location is at {location}
+        <br />
+        Inform your teammate to scan the QR code at the location. Refresh this page to continue.
+      </div>
+    );
+  }
   if (loading) {
     return <div className={styles.main}>Loading...</div>;
   }
@@ -191,7 +226,7 @@ const player2 = ({ params }) => {
       </div>
     );
   }
-  
+
   return (
     <main className={styles.main}>
       <h2 className={styles.title}>Your Coding Challenge</h2>
@@ -200,10 +235,12 @@ const player2 = ({ params }) => {
           Player shouldn't rename the function name which is present in the template. If they do,
           the compiler will throw an error and the hidden test case will fail.
         </li>
+        <li>
+          Player should code the logic inside the function and the return the expected output in the
+          funtion return.
+        </li>
       </ol>
-      <p style={{ margin: "1rem 0", fontWeight: "600" }}>
-        {question?.question}
-      </p>
+      <p style={{ margin: "1rem 0", fontWeight: "600" }}>{question?.question}</p>
       <CodeMirror
         value={code}
         theme={githubDark}

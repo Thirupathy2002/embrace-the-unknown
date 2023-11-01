@@ -30,6 +30,7 @@ const player1 = ({ params }) => {
       if (res.status === 200) {
         toast.success("Access Granted");
         setAccess(true);
+        fetchQuestion();
       }
     }
   };
@@ -53,9 +54,11 @@ const player1 = ({ params }) => {
     } else {
       toast.error("Room not found");
     }
+    setLoading(false);
   };
 
   const fetchQuestion = async () => {
+    setLoading(true);
     const res = await fetch("/api/question", {
       cache: "no-store",
       method: "POST",
@@ -95,7 +98,6 @@ const player1 = ({ params }) => {
     }
     setIsMobile(hasTouchScreen);
     fetchTurn();
-    fetchQuestion();
   }, []);
 
   if (loading) {

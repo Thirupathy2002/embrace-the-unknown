@@ -9,9 +9,9 @@ export async function GET(req) {
     const data = await Room.create({
       id: Math.random().toString(36).substr(2, 6).toUpperCase(),
       step: 1,
-      puzzle: shuffleArray([1, 2, 3, 4]),
-      debug: shuffleArray([1, 2, 3, 4]),
-      code: shuffleArray([1, 2, 3, 4]),
+      puzzle: shuffleArray([1, 2, 3, 4, 5]),
+      debug: shuffleArray([1, 2, 3, 4, 5]),
+      code: shuffleArray([1, 2, 3]),
     });
     return NextResponse.json({ message: "Created a new room", roomID: data.id }, { status: 200 });
   } catch (error) {
