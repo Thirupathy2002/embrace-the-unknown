@@ -7,10 +7,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { toast } from "sonner";
-import * as Diff from "diff";
-
-// get this value from server.
-const QstnNum = 1;
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer-continued";
 
 const player2 = ({ params }) => {
   const roomID = params.id;
@@ -23,9 +20,9 @@ const player2 = ({ params }) => {
   const [question, setQuestion] = useState();
   const [isTurn, setIsTurn] = useState(false);
 
-  const [testpassed, setTestpassed] = useState(false);
-  const [errorString, setErrorString] = useState("");
-  const [diff, setDiff] = useState({});
+  const [testCase, setTestCase] = useState([null, null]);
+
+  const [diff, setDiff] = useState({ newCode: "", oldCode: "" });
 
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
@@ -66,8 +63,7 @@ const player2 = ({ params }) => {
 
   const handleTest = async () => {
     setRuncodeLoading(true);
-    setDiff("");
-
+    setDiff({ newCode: "", oldCode: "" });
     const functionName = question?.check_fn;
     let testcaseAddedFns = [];
 
@@ -111,7 +107,7 @@ const player2 = ({ params }) => {
         }),
       });
       if (res.status === 202) {
-        setTestpassed(true);
+        setTestCase([true, true]);
         toast.success("All test cases have been passed. Hit submit to continue.");
       }
       if (res.status === 400) {
@@ -123,12 +119,12 @@ const player2 = ({ params }) => {
       }
       if (res.status === 206) {
         const data = await res.json();
-        console.log(question?.test_cases[0].output);
-        console.log(data.stdOutput[0]);
-        
-        console.log(Diff(data.stdOutput[0], question?.test_cases[0].output));
-        // setDiff(Diff(data.stdOutput[0], test_case.output));
-        toast.error("You haven't passed all the test cases🛸");
+        console.log(data);
+        toast.error("Test cases failed! ");
+        setTestCase(data.result);
+        if (!data.result[0]) {
+          setDiff({ oldCode: data.stdOutput[0], newCode: question?.test_cases[0].output });
+        }
       }
     } catch (err) {
       toast.error(err);
@@ -235,14 +231,50 @@ const player2 = ({ params }) => {
           <button className={styles.btn} onClick={() => handleTest()}>
             {runcodeLoading ? "Loading.." : "Run code"}
           </button>
-          {testpassed && (
+          {testCase.every((item) => item) && (
             <button className={styles.btn} onClick={() => handleSubmit()}>
               Submit
             </button>
           )}
         </div>
       </div>
-      {!testpassed && <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫.</h4>}
+      {diff.newCode && (
+        <ReactDiffViewer
+          compareMethod={DiffMethod.LINES}
+          leftTitle="Std Output"
+          rightTitle="Expected"
+          styles={{
+            variables: {
+              dark: {
+                diffViewerTitleBackground: "#0d1117",
+                diffViewerTitleColor: "#8b949e",
+              },
+            },
+          }}
+          useDarkTheme
+          oldValue={diff.oldCode}
+          newValue={diff.newCode}
+          splitView
+        />
+      )}
+      <div className={styles.test_cases}>
+        <div>
+          <h3>
+            Test Case 1:
+            <span style={{ marginLeft: "1rem" }}>{testCase[0] ? `✅` : diff ? `❌` : ""}</span>
+          </h3>
+          <div className={styles.test_case_row}>
+            <h4>Input: </h4>
+            <p>{question.test_cases[0].input}</p>
+          </div>
+          <div className={styles.test_case_row}>
+            <h4>Output: </h4>
+            <p>{`${question.test_cases[0].output}`}</p>
+          </div>
+        </div>
+      </div>
+      {!testCase[0] && <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫</h4>}
+      {testCase[1] == false && <h4 className={styles.hidden_cases}>Hidden test cases failed 😭</h4>}
     </main>
   );
 };
