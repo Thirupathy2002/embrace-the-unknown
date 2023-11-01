@@ -10,7 +10,7 @@ export async function POST(req) {
     let question;
     if (room.turn == 1) {
       question = await Puzzle_questions.findOne({
-        id: room.code[room.step - 1],
+        id: room.step,
       });
     } else {
       question = await Coding_questions.findOne({

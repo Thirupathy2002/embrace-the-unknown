@@ -30,7 +30,6 @@ const player1 = ({ params }) => {
       if (res.status === 200) {
         toast.success("Access Granted");
         setAccess(true);
-        fetchQuestion();
       }
     }
   };
@@ -54,11 +53,9 @@ const player1 = ({ params }) => {
     } else {
       toast.error("Room not found");
     }
-    setLoading(false);
   };
 
   const fetchQuestion = async () => {
-    setLoading(true);
     const res = await fetch("/api/question", {
       cache: "no-store",
       method: "POST",
@@ -69,7 +66,6 @@ const player1 = ({ params }) => {
     if (res.status === 200) {
       const { question } = await res.json();
       setQuestion(question);
-      setCode(question?.template[lang]);
     }
     setLoading(false);
   };
@@ -98,6 +94,7 @@ const player1 = ({ params }) => {
     }
     setIsMobile(hasTouchScreen);
     fetchTurn();
+    fetchQuestion();
   }, []);
 
   if (loading) {
@@ -130,7 +127,7 @@ const player1 = ({ params }) => {
     );
   }
 
-  if (access) {
+  if (!access) {
     return (
       <div className={styles.main}>
         <div className={styles.head}>
@@ -138,6 +135,9 @@ const player1 = ({ params }) => {
           Room ID: <span>{roomID}</span>
           <br />
           <div className={styles.question}>Question ....</div>
+          <div> use question state n map it</div>
+          <button>verify</button>
+          <button>submit</button>
         </div>
       </div>
     );
