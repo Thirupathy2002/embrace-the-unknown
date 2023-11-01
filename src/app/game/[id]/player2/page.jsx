@@ -6,10 +6,8 @@ import { langOptions, selectStyles } from "./constants";
 import CodeMirror from "@uiw/react-codemirror";
 import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
-import { round1 } from "./round1";
 import { toast } from "sonner";
-import ReactDiffViewer from "react-diff-viewer";
-
+import * as Diff from "diff";
 
 // get this value from server.
 const QstnNum = 1;
@@ -18,17 +16,16 @@ const player2 = ({ params }) => {
   const roomID = params.id;
 
   const [isMobile, setIsMobile] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [runcodeLoading, setRuncodeLoading] = useState(false);
   const [lang, setLang] = useState("javascript");
-  const [code, setCode] = useState(round1[QstnNum].template[lang]);
+  const [code, setCode] = useState();
+  const [question, setQuestion] = useState();
   const [isTurn, setIsTurn] = useState(false);
-  // const [testCase, setTestCase] = useState([0, 0]);
+
   const [testpassed, setTestpassed] = useState(false);
   const [errorString, setErrorString] = useState("");
-  const [diff, setDiff] = useState("");
-  
+  const [diff, setDiff] = useState({});
 
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
@@ -40,46 +37,57 @@ const player2 = ({ params }) => {
     });
     if (res.status === 200) {
       const { turn } = await res.json();
-      if (turn == 1) setIsTurn(true);
+      if (turn == 2) setIsTurn(true);
       else setIsTurn(false);
     } else {
       toast.error("Room not found");
+    }
+  };
+
+  const fetchQuestion = async () => {
+    const res = await fetch("/api/question", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        roomID,
+      }),
+    });
+    if (res.status === 200) {
+      const { question } = await res.json();
+      setQuestion(question);
+      setCode(question?.template[lang]);
     }
     setLoading(false);
   };
 
   const handleSubmit = () => {
-    console.log('submit');
-  }
+    console.log("submit");
+  };
 
   const handleTest = async () => {
     setRuncodeLoading(true);
-    setDiff("")
+    setDiff("");
 
-    const functionName = round1[QstnNum].check_fn;
+    const functionName = question?.check_fn;
     let testcaseAddedFns = [];
 
     if (lang === "java") {
-      testcaseAddedFns = round1[QstnNum].test_cases.map(
+      testcaseAddedFns = question?.test_cases.map(
         (item) => `System.out.println(${functionName}(${item.input}));`
       );
     } else if (lang === "javascript") {
-      testcaseAddedFns = round1[QstnNum].test_cases.map(
+      testcaseAddedFns = question?.test_cases.map(
         (item) => `console.log(${functionName}(${item.input}));`
       );
       testcaseAddedFns = testcaseAddedFns.join('console.log("^v^");');
     } else {
-      testcaseAddedFns = round1[QstnNum].test_cases.map(
-        (item) => `${functionName}(${item.input})`
-      );
+      testcaseAddedFns = question?.test_cases.map((item) => `${functionName}(${item.input})`);
     }
 
     let reqPayload;
 
     if (lang === "c") {
-      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(
-        ";\n"
-      )};\n return 0;\n}`;
+      reqPayload = `${code}\n\nint main() {\n${testcaseAddedFns.join(";\n")};\n return 0;\n}`;
     } else if (lang === "java") {
       reqPayload = `${code
         .trim()
@@ -104,9 +112,7 @@ const player2 = ({ params }) => {
       });
       if (res.status === 202) {
         setTestpassed(true);
-        toast.success(
-          "All test cases have been passed. Hit submit to continue."
-        );
+        toast.success("All test cases have been passed. Hit submit to continue.");
       }
       if (res.status === 400) {
         toast.error("Error in your code!");
@@ -116,8 +122,12 @@ const player2 = ({ params }) => {
         toast.error(result.message);
       }
       if (res.status === 206) {
-        const result = await res.json();
-        setDiff(result.stdOutput[0])
+        const data = await res.json();
+        console.log(question?.test_cases[0].output);
+        console.log(data.stdOutput[0]);
+        
+        console.log(Diff(data.stdOutput[0], question?.test_cases[0].output));
+        // setDiff(Diff(data.stdOutput[0], test_case.output));
         toast.error("You haven't passed all the test cases🛸");
       }
     } catch (err) {
@@ -151,10 +161,11 @@ const player2 = ({ params }) => {
     }
     setIsMobile(hasTouchScreen);
     fetchTurn();
+    fetchQuestion();
   }, []);
 
   useEffect(() => {
-    setCode(round1[QstnNum].template[lang]);
+    if (question) setCode(question?.template[lang]);
   }, [lang]);
 
   if (loading) {
@@ -168,9 +179,7 @@ const player2 = ({ params }) => {
           <div className={styles.title}>EMBRACE THE UNKNOWN</div>
           Room ID: <span>{roomID}</span>
           <br />
-          <div className={styles.notmobile}>
-            ⚠️ Player 2 must be using a desktop.
-          </div>
+          <div className={styles.notmobile}>⚠️ Player 2 must be using a desktop.</div>
         </div>
       </div>
     );
@@ -192,14 +201,13 @@ const player2 = ({ params }) => {
       <h2 className={styles.title}>Your Coding Challenge</h2>
       <ol className={styles.instructions}>
         <li>
-          Player shouldn't rename the function name which is present in the
-          template. If they do, the compiler will throw an error and the hidden
-          test case will fail.
+          Player shouldn't rename the function name which is present in the template. If they do,
+          the compiler will throw an error and the hidden test case will fail.
         </li>
       </ol>
       <p style={{ margin: "1rem 0", fontWeight: "600" }}>
         <span>Qn: </span>
-        {round1[QstnNum].question}
+        {question?.question}
       </p>
       <CodeMirror
         value={code}
@@ -234,57 +242,7 @@ const player2 = ({ params }) => {
           )}
         </div>
       </div>
-      {round1[QstnNum].test_cases.toSpliced(1, 1).map((test_case, index) => (
-        <div className={styles.test_cases} key={index}>
-          <div>
-            <h3>
-              Test Case {index + 1}
-              <span style={{ marginLeft: "1rem" }}>
-                {testpassed ? `✅` : diff ? `❌` : ""}
-              </span>
-            </h3>
-            <div className={styles.test_case_row}>
-              <h4>Input: </h4>
-              <p>{test_case.input}</p>
-            </div>
-            <div className={styles.test_case_row}>
-              <h4>Output: </h4>
-              {console.log(test_case.output)}
-              <p>{`${test_case.output}`}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-      {diff && (
-        <ReactDiffViewer
-          oldValue={round1[QstnNum].test_cases[0].output}
-          newValue={diff}
-          // hideLineNumbers={true}
-          leftTitle="Expected Output"
-          rightTitle="Your Output"
-          styles={{
-            wordAdded: {
-              width: "1ch",
-              height: "1.8ch",
-              borderRadius: "0px",
-            },
-            wordRemoved: {
-              width: "1ch",
-              height: "1.8ch",
-              borderRadius: "0px",
-            },
-            diffAdded: {
-              backgroundColor: "transparent",
-            },
-            diffRemoved: {
-              backgroundColor: "transparent",
-            },
-          }}
-        />
-      )}
-      {!testpassed && (
-        <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫.</h4>
-      )}
+      {!testpassed && <h4 className={styles.hidden_cases}>Other test cases are hidden 🤫.</h4>}
     </main>
   );
 };
