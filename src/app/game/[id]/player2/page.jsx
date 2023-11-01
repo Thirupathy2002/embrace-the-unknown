@@ -19,9 +19,7 @@ const player2 = ({ params }) => {
   const [code, setCode] = useState();
   const [question, setQuestion] = useState();
   const [isTurn, setIsTurn] = useState(false);
-
   const [testCase, setTestCase] = useState([null, null]);
-
   const [diff, setDiff] = useState({ newCode: "", oldCode: "" });
 
   const fetchTurn = async () => {
@@ -180,6 +178,7 @@ const player2 = ({ params }) => {
       </div>
     );
   }
+
   if (!isTurn) {
     return (
       <div className={styles.main}>
@@ -192,6 +191,7 @@ const player2 = ({ params }) => {
       </div>
     );
   }
+  
   return (
     <main className={styles.main}>
       <h2 className={styles.title}>Your Coding Challenge</h2>
@@ -202,7 +202,6 @@ const player2 = ({ params }) => {
         </li>
       </ol>
       <p style={{ margin: "1rem 0", fontWeight: "600" }}>
-        <span>Qn: </span>
         {question?.question}
       </p>
       <CodeMirror

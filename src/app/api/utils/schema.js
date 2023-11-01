@@ -35,7 +35,7 @@ const RoomSchema = mongoose.Schema({
   },
 });
 
-const CodeSchema = mongoose.Schema({
+const AccessCodeSchema = mongoose.Schema({
   code: {
     type: String,
     required: true,
@@ -46,7 +46,7 @@ const CodeSchema = mongoose.Schema({
   },
 });
 
-const QuestionSchema = mongoose.Schema({
+const CodingQuestionSchema = mongoose.Schema({
   id: {
     type: Number,
     required: true,
@@ -83,9 +83,30 @@ const QuestionSchema = mongoose.Schema({
   },
 });
 
-const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
-const Access_code = mongoose.models.Access_code || mongoose.model("Access_code", CodeSchema);
-const Coding_questions =
-  mongoose.models.Coding_questions || mongoose.model("Coding_questions", QuestionSchema);
+const PuzzleQuestionSchema = mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  question: {
+    type: String,
+    required: true,
+  },
+  options: {
+    type: Array,
+    required: true,
+  },
+  answer: {
+    type: Number,
+    required: true,
+  },
+});
 
-export { Room, Access_code, Coding_questions };
+const Room = mongoose.models.Room || mongoose.model("Room", RoomSchema);
+const Access_code = mongoose.models.Access_code || mongoose.model("Access_code", AccessCodeSchema);
+const Coding_questions =
+  mongoose.models.Coding_questions || mongoose.model("Coding_questions", CodingQuestionSchema);
+const Puzzle_questions =
+  mongoose.models.Puzzle_questions || mongoose.model("Puzzle_questions", PuzzleQuestionSchema);
+
+export { Room, Access_code, Coding_questions, Puzzle_questions };

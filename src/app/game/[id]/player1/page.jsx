@@ -13,6 +13,7 @@ const player1 = ({ params }) => {
   const [access, setAccess] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [isTurn, setIsTurn] = useState(false);
+  const [question, setQuestion] = useState();
 
   const handleScan = async (result) => {
     if (result) {
@@ -52,6 +53,21 @@ const player1 = ({ params }) => {
     } else {
       toast.error("Room not found");
     }
+  };
+
+  const fetchQuestion = async () => {
+    const res = await fetch("/api/question", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        roomID,
+      }),
+    });
+    if (res.status === 200) {
+      const { question } = await res.json();
+      setQuestion(question);
+      setCode(question?.template[lang]);
+    }
     setLoading(false);
   };
 
@@ -79,6 +95,7 @@ const player1 = ({ params }) => {
     }
     setIsMobile(hasTouchScreen);
     fetchTurn();
+    fetchQuestion();
   }, []);
 
   if (loading) {
