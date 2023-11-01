@@ -8,7 +8,7 @@ import { loadLanguage } from "@uiw/codemirror-extensions-langs";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { round1 } from "./round1";
 import { toast } from "sonner";
-import ReactDiffViewer from "react-diff-viewer-continued";
+import ReactDiffViewer from "react-diff-viewer";
 
 
 // get this value from server.
@@ -190,7 +190,15 @@ const player2 = ({ params }) => {
   return (
     <main className={styles.main}>
       <h2 className={styles.title}>Your Coding Challenge</h2>
-      <p style={{ margin: "1rem 0", textAlign: "center" }}>
+      <ol className={styles.instructions}>
+        <li>
+          Player shouldn't rename the function name which is present in the
+          template. If they do, the compiler will throw an error and the hidden
+          test case will fail.
+        </li>
+      </ol>
+      <p style={{ margin: "1rem 0", fontWeight: "600" }}>
+        <span>Qn: </span>
         {round1[QstnNum].question}
       </p>
       <CodeMirror
@@ -231,7 +239,9 @@ const player2 = ({ params }) => {
           <div>
             <h3>
               Test Case {index + 1}
-              <span style={{ marginLeft: "1rem" }}>{testpassed ? `✅` : diff ? `❌` : "" }</span>
+              <span style={{ marginLeft: "1rem" }}>
+                {testpassed ? `✅` : diff ? `❌` : ""}
+              </span>
             </h3>
             <div className={styles.test_case_row}>
               <h4>Input: </h4>
@@ -249,6 +259,27 @@ const player2 = ({ params }) => {
         <ReactDiffViewer
           oldValue={round1[QstnNum].test_cases[0].output}
           newValue={diff}
+          // hideLineNumbers={true}
+          leftTitle="Expected Output"
+          rightTitle="Your Output"
+          styles={{
+            wordAdded: {
+              width: "1ch",
+              height: "1.8ch",
+              borderRadius: "0px",
+            },
+            wordRemoved: {
+              width: "1ch",
+              height: "1.8ch",
+              borderRadius: "0px",
+            },
+            diffAdded: {
+              backgroundColor: "transparent",
+            },
+            diffRemoved: {
+              backgroundColor: "transparent",
+            },
+          }}
         />
       )}
       {!testpassed && (

@@ -5,7 +5,7 @@
   justify-content: center;
   padding: 6rem;
   min-height: 100dvh;
-  max-width: 80vw;
+  max-width: 60vw;
   margin-inline: auto;
 
   >* {
@@ -57,6 +57,7 @@
     }
   }
 
+  list-style-position: inside;
   .instruction {
     width: 70vw;
     text-align: center;
@@ -110,7 +111,7 @@
 
   .hidden_cases {
     border: 1px solid #dadada;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 1rem 0;
     margin-top: 1rem;
     text-align: center;
@@ -130,8 +131,16 @@
 
     }
   }
+  .instructions{
+    margin-inline: auto;
+    padding: 16px;
+    border-radius: 5px;
+    background-color: #36334280;
+  }
 }
-
+.react-diff-1u4zuq6-word-added{
+  background-color: red !important;
+}
 //mobile
 @media screen and (max-width: 480px) {
   .main {

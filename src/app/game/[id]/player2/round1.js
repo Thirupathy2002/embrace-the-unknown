@@ -21,9 +21,9 @@ export const round1 = [
     id: 2,
     question: "Program to print half pyramid using *",
     template: {
-      javascript: `function reverse_string(string) {\n\n  // Write your code here\n\n    return revStr;\n}`,
-      c: `#include <stdio.h>\n\nvoid reverse_string(char *str) {\n\n // write your code here\n\n return revStr\n}\n`,
-      python: `def reverse_string(string):\n\n  #write your code here\n\n  return revStr`,
+      javascript: `function HalfPyramid(n) {\n\n  // Write your code here\n\n    return revStr;\n}`,
+      c: `#include <stdio.h>\n\nvoid HalfPyramid(int n) {\n\n // write your code here\n\n return revStr\n}\n`,
+      python: `def HalfPyramid(n):\n\n  #write your code here\n\n  return starPyramid`,
       java: `class Main {\n\n  public static String HalfPyramid(String[] args) {\n\n    //write your code here\n\n    return revStr;\n  }\n}`,
     },
     test_cases: [
