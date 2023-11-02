@@ -13,7 +13,9 @@ const player1 = ({ params }) => {
   const [access, setAccess] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [isTurn, setIsTurn] = useState(false);
-  const [question, setQuestion] = useState();
+  const [question, setQuestion] = useState("");
+  const [ans, setans] = useState("");
+  
 
   const handleScan = async (result) => {
     if (result) {
@@ -65,10 +67,24 @@ const player1 = ({ params }) => {
     });
     if (res.status === 200) {
       const { question } = await res.json();
+      console.log(question);
       setQuestion(question);
     }
     setLoading(false);
   };
+
+  const handleverify = async ()=>{
+    const res = await fetch("/api/verify", {
+      cache: "no-store",
+      method: "POST",
+      body: JSON.stringify({
+        ans,
+      }),
+    });
+    if (res.status === 200) {
+      console.log("happy");
+    }
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -134,9 +150,9 @@ const player1 = ({ params }) => {
           <div className={styles.title}>EMBRACE THE UNKNOWN</div>
           Room ID: <span>{roomID}</span>
           <br />
-          <div className={styles.question}>Question ....</div>
-          <div> use question state n map it</div>
-          <button>verify</button>
+          <div className={styles.question}>{question.question}</div>
+          <input type="text" value={ans}  onChange={()=>setans(e.target.value)}/>
+          <button onClick={handleverify}>verify</button>
           <button>submit</button>
         </div>
       </div>

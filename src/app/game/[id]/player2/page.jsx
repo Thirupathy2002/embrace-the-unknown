@@ -24,7 +24,7 @@ const player2 = ({ params }) => {
   const [isTurn, setIsTurn] = useState(false);
   const [testCase, setTestCase] = useState([null, null]);
   const [diff, setDiff] = useState({ newCode: "", oldCode: "" });
-
+console.log(isTurn);
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
       cache: "no-store",
@@ -35,7 +35,8 @@ const player2 = ({ params }) => {
     });
     if (res.status === 200) {
       const { turn } = await res.json();
-      if (turn == 2) setIsTurn(true);
+      console.log(turn);
+      if (turn == 2) setIsTurn(true); //1
       else setIsTurn(false);
     } else {
       toast.error("Room not found");
@@ -52,8 +53,11 @@ const player2 = ({ params }) => {
     });
     if (res.status === 200) {
       const { question } = await res.json();
+      // console.log(question);
       setQuestion(question);
-      setCode(question?.template[lang]);
+      if(isTurn){
+        setCode(question?.template[lang]);
+      }
     }
     setLoading(false);
   };
@@ -185,7 +189,7 @@ const player2 = ({ params }) => {
   }, []);
 
   useEffect(() => {
-    if (question) setCode(question?.template[lang]);
+     if (question) setCode(question?.template[lang])
   }, [lang]);
 
   if (location) {
@@ -215,6 +219,7 @@ const player2 = ({ params }) => {
   }
 
   if (!isTurn) {
+    console.log("here");
     return (
       <div className={styles.main}>
         <div className={styles.head}>
@@ -222,7 +227,7 @@ const player2 = ({ params }) => {
           Room ID: <span>{roomID}</span>
           <br />
         </div>
-        <div className={styles.question}>Waiting for player 2 to complete</div>
+        <div className={styles.question}>Waiting for player 1 to complete</div>
       </div>
     );
   }
