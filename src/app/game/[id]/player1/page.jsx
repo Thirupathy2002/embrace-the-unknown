@@ -74,15 +74,21 @@ const player1 = ({ params }) => {
   };
 
   const handleverify = async ()=>{
+    const id = question._id;
+    console.log(ans,id);
     const res = await fetch("/api/verify", {
       cache: "no-store",
       method: "POST",
       body: JSON.stringify({
-        ans,
+        id,
+        ans
       }),
     });
     if (res.status === 200) {
-      console.log("happy");
+      toast.success("Your answer is Correct");
+    }
+    if (res.status === 206) {
+      toast.success("Wrong answer");
     }
   }
 
@@ -151,9 +157,8 @@ const player1 = ({ params }) => {
           Room ID: <span>{roomID}</span>
           <br />
           <div className={styles.question}>{question.question}</div>
-          <input type="text" value={ans}  onChange={()=>setans(e.target.value)}/>
-          <button onClick={handleverify}>verify</button>
-          <button>submit</button>
+          <input type="text" value={ans}  onChange={(e)=>setans(e.target.value)}/>
+          <button onClick={handleverify}>submit</button>
         </div>
       </div>
     );

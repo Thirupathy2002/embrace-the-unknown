@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 const player2 = ({ params }) => {
   const roomID = params.id;
   const router = useRouter();
-
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("");
@@ -24,6 +23,7 @@ const player2 = ({ params }) => {
   const [isTurn, setIsTurn] = useState(false);
   const [testCase, setTestCase] = useState([null, null]);
   const [diff, setDiff] = useState({ newCode: "", oldCode: "" });
+  
 console.log(isTurn);
   const fetchTurn = async () => {
     const res = await fetch("/api/turn", {
